@@ -88,6 +88,28 @@ body {
 .card__body { padding: 14px 16px; }
 .card__footer { padding: 14px 16px; border-top: 1px solid var(--border); }
 
+.menuStats {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  font-size: 13px;
+}
+.menuStats__item {
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 6px 8px;
+  background: rgba(0,0,0,0.16);
+}
+.menuStats__label {
+  color: var(--muted);
+}
+.menuStats__value {
+  font-family: var(--mono);
+  font-weight: 800;
+  margin-left: 4px;
+}
+
 .btn {
   border: 1px solid transparent;
   border-radius: 12px;
@@ -177,26 +199,6 @@ body {
   transition: transform 80ms ease;
 }
 .clicker__target:active { transform: scale(0.98); }
-
-.clicker__target--hot {
-  box-shadow: 0 0 32px rgba(124, 92, 255, 0.7), 0 18px 50px rgba(0,0,0,0.55);
-  border-color: rgba(124, 92, 255, 0.8);
-}
-
-.clicker__target--ultra {
-  box-shadow: 0 0 40px rgba(24, 214, 200, 0.9), 0 0 80px rgba(124, 92, 255, 0.85), 0 22px 55px rgba(0,0,0,0.7);
-  border-color: rgba(24, 214, 200, 0.9);
-  animation: ultra-pulse 900ms ease-in-out infinite alternate;
-}
-
-@keyframes ultra-pulse {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(1.04);
-  }
-}
 .clicker__img {
   width: 110px;
   height: 110px;
@@ -216,22 +218,6 @@ body {
   background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.32), transparent 60%);
   pointer-events: none;
   animation: click-burst 420ms ease-out forwards;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.clickBurst__text {
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 800;
-  color: #e5e7eb;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-}
-
-.clickBurst--crit {
-  border-color: rgba(255, 241, 138, 0.95);
-  background: radial-gradient(circle at 50% 50%, rgba(253, 224, 71, 0.45), transparent 60%);
 }
 
 @keyframes click-burst {

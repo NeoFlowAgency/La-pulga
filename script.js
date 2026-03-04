@@ -46,6 +46,8 @@ function defaultSave() {
       thievesCaught: 0,
       highestCoins: 0,
       timePlayedMs: 0,
+      lastRunCoins: 0,
+      bestRunCoins: 0,
     },
     settings: {
       reducedMotion: false,
@@ -161,28 +163,28 @@ function computeShopDef() {
       description: "Augmente les pièces par clic.",
       baseCost: 15,
       costGrowth: 1.55,
-      effect: (level) => 1 + level,
+      effect: (level) => 0.7 + level * 0.6,
     },
     autoCollector: {
       name: "Collecteur auto",
       description: "Gagne des pièces automatiquement.",
       baseCost: 40,
       costGrowth: 1.6,
-      effect: (level) => level * 0.6, // coins/sec
+      effect: (level) => level * 0.4, // coins/sec (plus dur)
     },
     coinMagnet: {
       name: "Aimant à pièces",
       description: "Bonus permanent sur les gains.",
       baseCost: 120,
       costGrowth: 1.75,
-      effect: (level) => 1 + level * 0.08, // multiplier
+      effect: (level) => 1 + level * 0.05, // multiplier (plus dur)
     },
     luckyStrike: {
       name: "Coup chanceux",
       description: "Chance de coup critique (x3) sur clic.",
       baseCost: 200,
       costGrowth: 1.8,
-      effect: (level) => clamp(level * 0.03, 0, 0.35), // crit chance
+      effect: (level) => clamp(level * 0.02, 0, 0.25), // crit chance (plus dur)
     },
   };
 }
@@ -193,11 +195,11 @@ function getUpgradeCost(def, level) {
 
 function getDistrictDef(d) {
   const districts = [
-    { name: "Tel‑Avive", target: 250, thiefRate: 0.04 },
-    { name: "Jaffa", target: 1200, thiefRate: 0.06 },
-    { name: "Haïfa", target: 5000, thiefRate: 0.08 },
-    { name: "Nazareth", target: 18000, thiefRate: 0.1 },
-    { name: "Eilat", target: 60000, thiefRate: 0.12 },
+    { name: "Tel‑Avive", target: 400, thiefRate: 0.06 },
+    { name: "Jaffa", target: 2000, thiefRate: 0.08 },
+    { name: "Haïfa", target: 9000, thiefRate: 0.1 },
+    { name: "Nazareth", target: 30000, thiefRate: 0.12 },
+    { name: "Eilat", target: 100000, thiefRate: 0.14 },
   ];
   return districts[clamp(d, 0, districts.length - 1)];
 }
@@ -209,7 +211,7 @@ function maybeUnlockAchievement(save, key, toastText) {
   return next;
 }
 
-function MenuScreen({ canContinue, onContinue, onNewGame, onOpenSettings }) {
+function MenuScreen({ canContinue, onContinue, onNewGame, onOpenSettings, stats }) {
   return h(
     "div",
     { className: "screen" },
@@ -246,7 +248,19 @@ function MenuScreen({ canContinue, onContinue, onNewGame, onOpenSettings }) {
               h(Button, { onClick: onContinue, variant: "ghost", disabled: !canContinue }, "Continuer")
             ),
           },
-          h("div", { className: "muted" }, "Le jeu se sauvegarde automatiquement sur ton navigateur.")
+          h("div", null,
+            h("div", { className: "muted" }, "Le jeu se sauvegarde automatiquement sur ton navigateur."),
+            h("div", { className: "menuStats" },
+              h("div", { className: "menuStats__item" },
+                h("span", { className: "menuStats__label" }, "Dernière partie :"),
+                h("span", { className: "menuStats__value" }, formatNumber(stats.lastRunCoins || 0))
+              ),
+              h("div", { className: "menuStats__item" },
+                h("span", { className: "menuStats__label" }, "Meilleur score :"),
+                h("span", { className: "menuStats__value" }, formatNumber(stats.bestRunCoins || 0))
+              )
+            )
+          )
         ),
         h(
           Card,
@@ -398,10 +412,6 @@ function GameScreen({ save, setSave, onBackToMenu }) {
   const districtTarget = district.target;
   const districtProgress = clamp(save.game.coins, 0, districtTarget);
 
-  const comboValue = save.game.combo || 0;
-  const isComboHot = comboValue >= 20;
-  const isComboUltra = comboValue >= 60;
-
   function pushToast(text) {
     setSave((prev) => {
       const next = { ...prev, game: { ...prev.game } };
@@ -423,14 +433,16 @@ function GameScreen({ save, setSave, onBackToMenu }) {
 
   function handleClick(e) {
     const t = nowMs();
-    const randCrit = Math.random();
 
-    let clickPos = null;
     if (e && e.currentTarget && typeof e.clientX === "number") {
       const rect = e.currentTarget.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
-      clickPos = { x, y };
+      const id = `cb-${t}-${Math.random()}`;
+      setClickBursts((prev) => [...prev, { id, x, y }]);
+      setTimeout(() => {
+        setClickBursts((prev) => prev.filter((b) => b.id !== id));
+      }, 450);
     }
 
     setSave((prev) => {
@@ -443,7 +455,7 @@ function GameScreen({ save, setSave, onBackToMenu }) {
       next.game.comboUntilMs = t + 1500;
 
       const comboBonus = 1 + Math.min(0.5, combo * 0.02);
-      const isCrit = randCrit < critChance;
+      const isCrit = Math.random() < critChance;
       const critMult = isCrit ? 3 : 1;
       const earned = Math.floor(clickPower * coinsMultiplier * comboBonus * critMult);
 
@@ -458,21 +470,6 @@ function GameScreen({ save, setSave, onBackToMenu }) {
         }
       } catch {
         // ignore
-      }
-
-      if (clickPos) {
-        const id = `cb-${t}-${Math.random()}`;
-        const burst = {
-          id,
-          x: clickPos.x,
-          y: clickPos.y,
-          amount: earned,
-          crit: isCrit,
-        };
-        setClickBursts((prevBursts) => [...prevBursts, burst]);
-        setTimeout(() => {
-          setClickBursts((prevBursts) => prevBursts.filter((b) => b.id !== id));
-        }, 500);
       }
 
       if (next.stats.totalClicks >= 1) {
@@ -567,7 +564,7 @@ function GameScreen({ save, setSave, onBackToMenu }) {
 
       // Gestion du voleur
       if (next.game.activeThief && (next.game.activeThief.expiresAtMs || 0) <= t) {
-        const steal = Math.max(5, Math.floor((next.game.coins || 0) * 0.08));
+        const steal = Math.max(8, Math.floor((next.game.coins || 0) * 0.12));
         next.game.coins = Math.max(0, (next.game.coins || 0) - steal);
         next.game.activeThief = null;
         next.game.toastQueue = [...next.game.toastQueue, { id: `t-steal-${nowMs()}`, text: `Le voleur s'échappe... -${steal} pièces`, createdAtMs: nowMs() }];
@@ -640,7 +637,7 @@ function GameScreen({ save, setSave, onBackToMenu }) {
             h(
               "button",
               {
-                className: `clicker__target ${isComboUltra ? "clicker__target--ultra" : isComboHot ? "clicker__target--hot" : ""}`,
+                className: "clicker__target",
                 onClick: (e) => handleClick(e),
                 "aria-label": "Cliquer pour gagner des pièces",
               },
@@ -662,19 +659,11 @@ function GameScreen({ save, setSave, onBackToMenu }) {
               )
             ),
             clickBursts.map((b) =>
-              h(
-                "div",
-                {
-                  key: b.id,
-                  className: `clickBurst ${b.crit ? "clickBurst--crit" : ""}`,
-                  style: { left: `${b.x}%`, top: `${b.y}%` },
-                },
-                h(
-                  "div",
-                  { className: "clickBurst__text" },
-                  `+${formatNumber(b.amount || 0)}`
-                )
-              )
+              h("div", {
+                key: b.id,
+                className: "clickBurst",
+                style: { left: `${b.x}%`, top: `${b.y}%` },
+              })
             ),
             h("div", { className: "row row--gap row--center" },
               h("div", { className: "pill" }, `Combo: x${save.game.combo || 0}`),
@@ -790,6 +779,22 @@ function App() {
     setRoute("game");
   }
 
+  function backToMenuFromGame() {
+    setSave((prev) => {
+      const lastCoins = prev.game.coins || 0;
+      const bestRun = Math.max(prev.stats.bestRunCoins || 0, lastCoins);
+      return {
+        ...prev,
+        stats: {
+          ...prev.stats,
+          lastRunCoins: lastCoins,
+          bestRunCoins: bestRun,
+        },
+      };
+    });
+    setRoute("menu");
+  }
+
   function hardReset() {
     const fresh = defaultSave();
     try {
@@ -811,8 +816,9 @@ function App() {
           onContinue: continueGame,
           onNewGame: newGame,
           onOpenSettings: () => setSettingsOpen(true),
+          stats: save.stats,
         })
-      : h(GameScreen, { save, setSave, onBackToMenu: () => setRoute("menu") }),
+      : h(GameScreen, { save, setSave, onBackToMenu: backToMenuFromGame }),
     settingsOpen
       ? h(SettingsModal, {
           settings: save.settings,
