@@ -24,6 +24,9 @@ body {
     radial-gradient(1000px 700px at 70% 65%, rgba(24, 214, 200, 0.14), transparent 55%),
     linear-gradient(180deg, var(--bg0), var(--bg1));
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .screen {
@@ -305,4 +308,84 @@ body {
   width: min(520px, 92%);
 }
 .winbox__title { font-weight: 1000; letter-spacing: 0.2px; margin-bottom: 4px; }
+
+.tutorial {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.8);
+  display: grid;
+  place-items: center;
+  z-index: 90;
+  padding: 16px;
+}
+.tutorial__card {
+  width: min(520px, 100%);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(15, 27, 51, 0.98), rgba(5, 10, 22, 0.98));
+  box-shadow: var(--shadow);
+  padding: 18px 18px 16px;
+}
+.tutorial__title {
+  font-weight: 900;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+.tutorial__list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tutorial__actions {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 700px) {
+  .screen {
+    padding: 14px 10px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .topbar__right {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .clicker__target {
+    width: 190px;
+    height: 190px;
+  }
+
+  .playArea {
+    min-height: 460px;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .toasts {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+  }
+
+  .toast {
+    max-width: 100%;
+  }
+
+  .tutorial__card {
+    padding: 16px 14px 14px;
+  }
+}
 

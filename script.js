@@ -68,6 +68,7 @@ function defaultSave() {
       achievements: {},
       activeThief: null, // { id, spawnedAtMs, x, y, hp, expiresAtMs }
       toastQueue: [],
+      tutorialSeen: false,
     },
   };
 }
@@ -287,6 +288,36 @@ function Toasts({ items }) {
   );
 }
 
+function TutorialOverlay({ onClose }) {
+  return h(
+    "div",
+    { className: "tutorial", role: "dialog", "aria-modal": "true" },
+    h(
+      "div",
+      { className: "tutorial__card" },
+      h("div", { className: "tutorial__title" }, "Comment jouer à Polga Clicker ?"),
+      h(
+        "ol",
+        { className: "tutorial__list" },
+        h("li", null, "Tape / clique sur l'étoile au centre pour gagner des pièces."),
+        h("li", null, "Avec les pièces, achète des améliorations dans la boutique à droite."),
+        h("li", null, "Un voleur peut apparaître sur la zone de jeu : tape dessus très vite pour gagner un bonus."),
+        h("li", null, "Atteins l'objectif de pièces de chaque quartier pour débloquer le suivant."),
+        h("li", null, "Plus tu joues, plus tu débloques de succès et deviens une légende de la Polga.")
+      ),
+      h(
+        "div",
+        { className: "tutorial__actions" },
+        h(
+          Button,
+          { onClick: onClose, variant: "primary" },
+          "C'est parti !"
+        )
+      )
+    )
+  );
+}
+
 function AchievementPanel({ achievements }) {
   const defs = [
     { key: "firstClick", name: "Premier clic", desc: "Cliquer 1 fois." },
@@ -312,6 +343,17 @@ function AchievementPanel({ achievements }) {
 
 function GameScreen({ save, setSave, onBackToMenu }) {
   const shopDef = useMemo(() => computeShopDef(), []);
+
+  const [showTutorial, setShowTutorial] = useState(() => !save.game.tutorialSeen);
+
+  const isMobile = useMemo(
+    () =>
+      typeof navigator !== "undefined" &&
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent || ""
+      ),
+    []
+  );
 
   const district = getDistrictDef(save.game.district);
 
@@ -378,6 +420,14 @@ function GameScreen({ save, setSave, onBackToMenu }) {
       next.stats.highestCoins = Math.max(next.stats.highestCoins || 0, next.game.coins);
       next.updatedAt = t;
 
+      try {
+        if (isCrit && typeof navigator !== "undefined" && navigator.vibrate) {
+          navigator.vibrate(30);
+        }
+      } catch {
+        // ignore
+      }
+
       if (next.stats.totalClicks >= 1) {
         return maybeUnlockAchievement(next, "firstClick", "Succès débloqué : Premier clic");
       }
@@ -437,6 +487,13 @@ function GameScreen({ save, setSave, onBackToMenu }) {
       next.stats.totalCoinsEarned = (next.stats.totalCoinsEarned || 0) + bounty;
       next.game.toastQueue = [...next.game.toastQueue, { id: `t-catch-${nowMs()}`, text: `Voleur attrapé ! +${bounty} pièces`, createdAtMs: nowMs() }];
       let withAch = maybeUnlockAchievement(next, "catchThief", "Succès débloqué : Justicier");
+      try {
+        if (typeof navigator !== "undefined" && navigator.vibrate) {
+          navigator.vibrate([20, 40, 30]);
+        }
+      } catch {
+        // ignore
+      }
       return withAch;
     });
   }
@@ -607,7 +664,18 @@ function GameScreen({ save, setSave, onBackToMenu }) {
       ),
 
       h(Toasts, { items: save.game.toastQueue || [] })
-    )
+    ),
+    showTutorial
+      ? h(TutorialOverlay, {
+          onClose: () => {
+            setShowTutorial(false);
+            setSave((prev) => ({
+              ...prev,
+              game: { ...prev.game, tutorialSeen: true },
+            }));
+          },
+        })
+      : null
   );
 }
 
