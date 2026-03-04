@@ -215,7 +215,23 @@ function MenuScreen({ canContinue, onContinue, onNewGame, onOpenSettings }) {
     { className: "screen" },
     h("div", { className: "shell" }, 
       h("div", { className: "brand" },
-        h("img", { className: "brand__logo", src: "assets/polga.png", alt: "Polga" }),
+        h(
+          "svg",
+          {
+            className: "brand__logo",
+            viewBox: "0 0 100 100",
+            "aria-hidden": "true",
+          },
+          // Étoile de David stylisée (deux triangles)
+          h("polygon", {
+            points: "50,5 61,27 86,27 67,43 74,68 50,55 26,68 33,43 14,27 39,27",
+            fill: "#0057b7",
+          }),
+          h("polygon", {
+            points: "50,95 39,73 14,73 33,57 26,32 50,45 74,32 67,57 86,73 61,73",
+            fill: "#0057b7",
+          })
+        ),
         h("div", null, h("div", { className: "brand__title" }, "Polga Clicker"), h("div", { className: "brand__subtitle" }, "Attrape le voleur. Fais monter ton empire de pièces."))
       ),
       h(
@@ -611,12 +627,22 @@ function GameScreen({ save, setSave, onBackToMenu }) {
                 onClick: (e) => handleClick(e),
                 "aria-label": "Cliquer pour gagner des pièces",
               },
-              h("img", {
-                src: "assets/polga.png",
-                alt: "Polga",
-                className: "clicker__img",
-                draggable: "false",
-              })
+              h(
+                "svg",
+                {
+                  className: "clicker__img",
+                  viewBox: "0 0 100 100",
+                  "aria-hidden": "true",
+                },
+                h("polygon", {
+                  points: "50,5 61,27 86,27 67,43 74,68 50,55 26,68 33,43 14,27 39,27",
+                  fill: "#2563eb",
+                }),
+                h("polygon", {
+                  points: "50,95 39,73 14,73 33,57 26,32 50,45 74,32 67,57 86,73 61,73",
+                  fill: "#2563eb",
+                })
+              )
             ),
             clickBursts.map((b) =>
               h("div", {
