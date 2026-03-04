@@ -217,30 +217,12 @@ function MenuScreen({ canContinue, onContinue, onNewGame, onOpenSettings, stats 
     { className: "screen" },
     h("div", { className: "shell" }, 
       h("div", { className: "brand" },
-        h(
-          "svg",
-          {
-            className: "brand__logo",
-            viewBox: "0 0 100 100",
-            preserveAspectRatio: "xMidYMid meet",
-            "aria-hidden": "true",
-          },
-          // Étoile de David régulière (deux triangles équilatéraux centrés)
-          h("polygon", {
-            points: "50,20 28,58 72,58",
-            fill: "none",
-            stroke: "#2563eb",
-            strokeWidth: 7,
-            strokeLinejoin: "round",
-          }),
-          h("polygon", {
-            points: "50,80 28,42 72,42",
-            fill: "none",
-            stroke: "#2563eb",
-            strokeWidth: 7,
-            strokeLinejoin: "round",
-          })
-        ),
+        h("img", {
+          className: "brand__logo",
+          src: "assets/c__Users_NOAKIM.GRELIER_AppData_Roaming_Cursor_User_workspaceStorage_b24b2042cd61d8f84e3ad2fef6ddd421_images_polga-0d4a2e18-5915-46bd-8cdd-66b5ee7e2a4e.png",
+          alt: "Polga",
+          draggable: "false",
+        }),
         h("div", null, h("div", { className: "brand__title" }, "Polga Clicker"), h("div", { className: "brand__subtitle" }, "Attrape le voleur. Fais monter ton empire de pièces."))
       ),
       h(
@@ -648,29 +630,12 @@ function GameScreen({ save, setSave, onBackToMenu }) {
                 onClick: (e) => handleClick(e),
                 "aria-label": "Cliquer pour gagner des pièces",
               },
-              h(
-                "svg",
-                {
-                  className: "clicker__img",
-                  viewBox: "0 0 100 100",
-                  preserveAspectRatio: "xMidYMid meet",
-                  "aria-hidden": "true",
-                },
-                h("polygon", {
-                  points: "50,20 28,58 72,58",
-                  fill: "none",
-                  stroke: "#2563eb",
-                  strokeWidth: 7,
-                  strokeLinejoin: "round",
-                }),
-                h("polygon", {
-                  points: "50,80 28,42 72,42",
-                  fill: "none",
-                  stroke: "#2563eb",
-                  strokeWidth: 7,
-                  strokeLinejoin: "round",
-                })
-              )
+              h("img", {
+                className: "clicker__img",
+                src: "assets/c__Users_NOAKIM.GRELIER_AppData_Roaming_Cursor_User_workspaceStorage_b24b2042cd61d8f84e3ad2fef6ddd421_images_polga-0d4a2e18-5915-46bd-8cdd-66b5ee7e2a4e.png",
+                alt: "Polga",
+                draggable: "false",
+              })
             ),
             clickBursts.map((b) =>
               h("div", {
