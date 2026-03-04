@@ -219,7 +219,7 @@ function MenuScreen({ canContinue, onContinue, onNewGame, onOpenSettings, stats 
       h("div", { className: "brand" },
         h("img", {
           className: "brand__logo",
-          src: "assets/c__Users_NOAKIM.GRELIER_AppData_Roaming_Cursor_User_workspaceStorage_b24b2042cd61d8f84e3ad2fef6ddd421_images_polga-0d4a2e18-5915-46bd-8cdd-66b5ee7e2a4e.png",
+          src: "assets/c__Users_NOAKIM.GRELIER_AppData_Roaming_Cursor_User_workspaceStorage_b24b2042cd61d8f84e3ad2fef6ddd421_images_polga-d54e732b-d3d7-45fb-99ea-a1e343d01f54.png",
           alt: "Polga",
           draggable: "false",
         }),
@@ -632,7 +632,7 @@ function GameScreen({ save, setSave, onBackToMenu }) {
               },
               h("img", {
                 className: "clicker__img",
-                src: "assets/c__Users_NOAKIM.GRELIER_AppData_Roaming_Cursor_User_workspaceStorage_b24b2042cd61d8f84e3ad2fef6ddd421_images_polga-0d4a2e18-5915-46bd-8cdd-66b5ee7e2a4e.png",
+                src: "assets/c__Users_NOAKIM.GRELIER_AppData_Roaming_Cursor_User_workspaceStorage_b24b2042cd61d8f84e3ad2fef6ddd421_images_polga-d54e732b-d3d7-45fb-99ea-a1e343d01f54.png",
                 alt: "Polga",
                 draggable: "false",
               })
