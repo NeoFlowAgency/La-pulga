@@ -224,19 +224,21 @@ function MenuScreen({ canContinue, onContinue, onNewGame, onOpenSettings, stats 
             viewBox: "0 0 100 100",
             "aria-hidden": "true",
           },
-          // Étoile de David classique : deux triangles en contour
+          // Étoile de David régulière (deux triangles équilatéraux)
           h("polygon", {
-            points: "50,8 20,60 80,60",
+            // Triangle vers le haut
+            points: "50,18 24,63 76,63",
             fill: "none",
             stroke: "#2563eb",
-            strokeWidth: 8,
+            strokeWidth: 7,
             strokeLinejoin: "round",
           }),
           h("polygon", {
-            points: "50,92 20,40 80,40",
+            // Triangle vers le bas
+            points: "50,82 24,37 76,37",
             fill: "none",
             stroke: "#2563eb",
-            strokeWidth: 8,
+            strokeWidth: 7,
             strokeLinejoin: "round",
           })
         ),
@@ -655,17 +657,17 @@ function GameScreen({ save, setSave, onBackToMenu }) {
                   "aria-hidden": "true",
                 },
                 h("polygon", {
-                  points: "50,8 20,60 80,60",
+                  points: "50,18 24,63 76,63",
                   fill: "none",
                   stroke: "#2563eb",
-                  strokeWidth: 8,
+                  strokeWidth: 7,
                   strokeLinejoin: "round",
                 }),
                 h("polygon", {
-                  points: "50,92 20,40 80,40",
+                  points: "50,82 24,37 76,37",
                   fill: "none",
                   stroke: "#2563eb",
-                  strokeWidth: 8,
+                  strokeWidth: 7,
                   strokeLinejoin: "round",
                 })
               )
