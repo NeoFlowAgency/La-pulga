@@ -215,7 +215,7 @@ function MenuScreen({ canContinue, onContinue, onNewGame, onOpenSettings }) {
     { className: "screen" },
     h("div", { className: "shell" }, 
       h("div", { className: "brand" },
-        h("img", { className: "brand__logo", src: "assets/star.svg", alt: "Polga" }),
+        h("img", { className: "brand__logo", src: "assets/polga.png", alt: "Polga" }),
         h("div", null, h("div", { className: "brand__title" }, "Polga Clicker"), h("div", { className: "brand__subtitle" }, "Attrape le voleur. Fais monter ton empire de pièces."))
       ),
       h(
@@ -346,6 +346,8 @@ function GameScreen({ save, setSave, onBackToMenu }) {
 
   const [showTutorial, setShowTutorial] = useState(() => !save.game.tutorialSeen);
 
+  const [clickBursts, setClickBursts] = useState([]);
+
   const isMobile = useMemo(
     () =>
       typeof navigator !== "undefined" &&
@@ -399,8 +401,20 @@ function GameScreen({ save, setSave, onBackToMenu }) {
     });
   }
 
-  function handleClick() {
+  function handleClick(e) {
     const t = nowMs();
+
+    if (e && e.currentTarget && typeof e.clientX === "number") {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      const id = `cb-${t}-${Math.random()}`;
+      setClickBursts((prev) => [...prev, { id, x, y }]);
+      setTimeout(() => {
+        setClickBursts((prev) => prev.filter((b) => b.id !== id));
+      }, 450);
+    }
+
     setSave((prev) => {
       const next = { ...prev, stats: { ...prev.stats }, game: { ...prev.game } };
       next.stats.totalClicks = (next.stats.totalClicks || 0) + 1;
@@ -590,8 +604,26 @@ function GameScreen({ save, setSave, onBackToMenu }) {
           h(
             "div",
             { className: "clicker" },
-            h("button", { className: "clicker__target", onClick: handleClick, "aria-label": "Cliquer pour gagner des pièces" },
-              h("img", { src: "assets/star.svg", alt: "Polga", className: "clicker__img", draggable: "false" })
+            h(
+              "button",
+              {
+                className: "clicker__target",
+                onClick: (e) => handleClick(e),
+                "aria-label": "Cliquer pour gagner des pièces",
+              },
+              h("img", {
+                src: "assets/polga.png",
+                alt: "Polga",
+                className: "clicker__img",
+                draggable: "false",
+              })
+            ),
+            clickBursts.map((b) =>
+              h("div", {
+                key: b.id,
+                className: "clickBurst",
+                style: { left: `${b.x}%`, top: `${b.y}%` },
+              })
             ),
             h("div", { className: "row row--gap row--center" },
               h("div", { className: "pill" }, `Combo: x${save.game.combo || 0}`),

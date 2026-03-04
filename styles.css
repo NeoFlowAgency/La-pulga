@@ -162,6 +162,7 @@ body {
   justify-content: center;
   gap: 16px;
   padding: 22px 16px 18px;
+  position: relative;
 }
 
 .clicker__target {
@@ -177,6 +178,34 @@ body {
 }
 .clicker__target:active { transform: scale(0.98); }
 .clicker__img { width: 110px; height: 110px; pointer-events: none; user-select: none; }
+
+.clickBurst {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  margin-left: -40px;
+  margin-top: -40px;
+  border-radius: 999px;
+  border: 2px solid rgba(124, 92, 255, 0.85);
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.32), transparent 60%);
+  pointer-events: none;
+  animation: click-burst 420ms ease-out forwards;
+}
+
+@keyframes click-burst {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.95;
+  }
+  55% {
+    transform: scale(1.0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
 
 .pill {
   font-family: var(--mono);
