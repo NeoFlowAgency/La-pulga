@@ -222,20 +222,19 @@ function MenuScreen({ canContinue, onContinue, onNewGame, onOpenSettings, stats 
           {
             className: "brand__logo",
             viewBox: "0 0 100 100",
+            preserveAspectRatio: "xMidYMid meet",
             "aria-hidden": "true",
           },
-          // Étoile de David régulière (deux triangles équilatéraux)
+          // Étoile de David régulière (deux triangles équilatéraux centrés)
           h("polygon", {
-            // Triangle vers le haut
-            points: "50,18 24,63 76,63",
+            points: "50,20 28,58 72,58",
             fill: "none",
             stroke: "#2563eb",
             strokeWidth: 7,
             strokeLinejoin: "round",
           }),
           h("polygon", {
-            // Triangle vers le bas
-            points: "50,82 24,37 76,37",
+            points: "50,80 28,42 72,42",
             fill: "none",
             stroke: "#2563eb",
             strokeWidth: 7,
@@ -654,17 +653,18 @@ function GameScreen({ save, setSave, onBackToMenu }) {
                 {
                   className: "clicker__img",
                   viewBox: "0 0 100 100",
+                  preserveAspectRatio: "xMidYMid meet",
                   "aria-hidden": "true",
                 },
                 h("polygon", {
-                  points: "50,18 24,63 76,63",
+                  points: "50,20 28,58 72,58",
                   fill: "none",
                   stroke: "#2563eb",
                   strokeWidth: 7,
                   strokeLinejoin: "round",
                 }),
                 h("polygon", {
-                  points: "50,82 24,37 76,37",
+                  points: "50,80 28,42 72,42",
                   fill: "none",
                   stroke: "#2563eb",
                   strokeWidth: 7,
