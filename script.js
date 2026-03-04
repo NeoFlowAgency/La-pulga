@@ -398,6 +398,10 @@ function GameScreen({ save, setSave, onBackToMenu }) {
   const districtTarget = district.target;
   const districtProgress = clamp(save.game.coins, 0, districtTarget);
 
+  const comboValue = save.game.combo || 0;
+  const isComboHot = comboValue >= 20;
+  const isComboUltra = comboValue >= 60;
+
   function pushToast(text) {
     setSave((prev) => {
       const next = { ...prev, game: { ...prev.game } };
@@ -419,16 +423,14 @@ function GameScreen({ save, setSave, onBackToMenu }) {
 
   function handleClick(e) {
     const t = nowMs();
+    const randCrit = Math.random();
 
+    let clickPos = null;
     if (e && e.currentTarget && typeof e.clientX === "number") {
       const rect = e.currentTarget.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
-      const id = `cb-${t}-${Math.random()}`;
-      setClickBursts((prev) => [...prev, { id, x, y }]);
-      setTimeout(() => {
-        setClickBursts((prev) => prev.filter((b) => b.id !== id));
-      }, 450);
+      clickPos = { x, y };
     }
 
     setSave((prev) => {
@@ -441,7 +443,7 @@ function GameScreen({ save, setSave, onBackToMenu }) {
       next.game.comboUntilMs = t + 1500;
 
       const comboBonus = 1 + Math.min(0.5, combo * 0.02);
-      const isCrit = Math.random() < critChance;
+      const isCrit = randCrit < critChance;
       const critMult = isCrit ? 3 : 1;
       const earned = Math.floor(clickPower * coinsMultiplier * comboBonus * critMult);
 
@@ -456,6 +458,21 @@ function GameScreen({ save, setSave, onBackToMenu }) {
         }
       } catch {
         // ignore
+      }
+
+      if (clickPos) {
+        const id = `cb-${t}-${Math.random()}`;
+        const burst = {
+          id,
+          x: clickPos.x,
+          y: clickPos.y,
+          amount: earned,
+          crit: isCrit,
+        };
+        setClickBursts((prevBursts) => [...prevBursts, burst]);
+        setTimeout(() => {
+          setClickBursts((prevBursts) => prevBursts.filter((b) => b.id !== id));
+        }, 500);
       }
 
       if (next.stats.totalClicks >= 1) {
@@ -623,7 +640,7 @@ function GameScreen({ save, setSave, onBackToMenu }) {
             h(
               "button",
               {
-                className: "clicker__target",
+                className: `clicker__target ${isComboUltra ? "clicker__target--ultra" : isComboHot ? "clicker__target--hot" : ""}`,
                 onClick: (e) => handleClick(e),
                 "aria-label": "Cliquer pour gagner des pièces",
               },
@@ -645,11 +662,19 @@ function GameScreen({ save, setSave, onBackToMenu }) {
               )
             ),
             clickBursts.map((b) =>
-              h("div", {
-                key: b.id,
-                className: "clickBurst",
-                style: { left: `${b.x}%`, top: `${b.y}%` },
-              })
+              h(
+                "div",
+                {
+                  key: b.id,
+                  className: `clickBurst ${b.crit ? "clickBurst--crit" : ""}`,
+                  style: { left: `${b.x}%`, top: `${b.y}%` },
+                },
+                h(
+                  "div",
+                  { className: "clickBurst__text" },
+                  `+${formatNumber(b.amount || 0)}`
+                )
+              )
             ),
             h("div", { className: "row row--gap row--center" },
               h("div", { className: "pill" }, `Combo: x${save.game.combo || 0}`),
