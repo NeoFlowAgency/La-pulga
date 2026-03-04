@@ -224,14 +224,20 @@ function MenuScreen({ canContinue, onContinue, onNewGame, onOpenSettings, stats 
             viewBox: "0 0 100 100",
             "aria-hidden": "true",
           },
-          // Étoile de David : deux triangles équilatéraux superposés
+          // Étoile de David classique : deux triangles en contour
           h("polygon", {
-            points: "50,12 18,78 82,78",
-            fill: "#2563eb",
+            points: "50,8 20,60 80,60",
+            fill: "none",
+            stroke: "#2563eb",
+            strokeWidth: 8,
+            strokeLinejoin: "round",
           }),
           h("polygon", {
-            points: "50,88 18,22 82,22",
-            fill: "#2563eb",
+            points: "50,92 20,40 80,40",
+            fill: "none",
+            stroke: "#2563eb",
+            strokeWidth: 8,
+            strokeLinejoin: "round",
           })
         ),
         h("div", null, h("div", { className: "brand__title" }, "Polga Clicker"), h("div", { className: "brand__subtitle" }, "Attrape le voleur. Fais monter ton empire de pièces."))
@@ -649,12 +655,18 @@ function GameScreen({ save, setSave, onBackToMenu }) {
                   "aria-hidden": "true",
                 },
                 h("polygon", {
-                  points: "50,12 18,78 82,78",
-                  fill: "#2563eb",
+                  points: "50,8 20,60 80,60",
+                  fill: "none",
+                  stroke: "#2563eb",
+                  strokeWidth: 8,
+                  strokeLinejoin: "round",
                 }),
                 h("polygon", {
-                  points: "50,88 18,22 82,22",
-                  fill: "#2563eb",
+                  points: "50,92 20,40 80,40",
+                  fill: "none",
+                  stroke: "#2563eb",
+                  strokeWidth: 8,
+                  strokeLinejoin: "round",
                 })
               )
             ),
